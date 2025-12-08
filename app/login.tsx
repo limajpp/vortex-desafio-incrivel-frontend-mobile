@@ -1,14 +1,14 @@
 import { Zap } from "lucide-react-native";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useAuth } from "../authContext";
+import { useAuth } from "../contexts/authContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");

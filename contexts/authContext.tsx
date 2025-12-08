@@ -1,7 +1,7 @@
 import { Href, useRouter, useSegments } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { api } from "./services/api";
+import { api } from "../services/api";
 
 type User = {
   name: string;
@@ -46,12 +46,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isLoading) return;
 
-    // Conversão para string para evitar erro de tipagem estrita do Expo Router
     const currentSegment = segments[0] as string;
     const inAuthGroup = currentSegment === "(tabs)";
 
     if (!user && inAuthGroup) {
-      // Forçamos a tipagem aqui pois sabemos que a rota existirá
       router.replace("/login" as Href);
     } else if (user && currentSegment === "login") {
       router.replace("/(tabs)" as Href);

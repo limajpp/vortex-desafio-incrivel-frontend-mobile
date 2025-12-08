@@ -1,4 +1,3 @@
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   DarkTheme,
   DefaultTheme,
@@ -7,11 +6,13 @@ import {
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-import { AuthProvider } from "../authContext";
 import "../global.css";
 
+import { AuthProvider } from "@/contexts/authContext";
+import { useColorScheme } from "nativewind";
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
 
   return (
     <AuthProvider>
@@ -19,6 +20,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ headerShown: false }} />
+
           <Stack.Screen
             name="modal"
             options={{ presentation: "modal", title: "Novo Gasto" }}

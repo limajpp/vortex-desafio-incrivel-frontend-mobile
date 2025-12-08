@@ -1,34 +1,48 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useAuth } from "@/contexts/authContext"; // Confirme se o caminho está correto (pode ser ../authContext ou @/authContext)
+import { Tabs } from "expo-router";
+import { House, LogOut } from "lucide-react-native";
+import { Platform } from "react-native";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { signOut } = useAuth();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+        // Unifiquei tudo aqui:
+        tabBarStyle: {
+          ...Platform.select({
+            ios: { position: "absolute" },
+            default: {},
+          }),
+          backgroundColor: "#18181b", // Zinc-900
+          borderTopColor: "#27272a", // Zinc-800
+        },
+        tabBarActiveTintColor: "#EAB308", // Amarelo Primary
+        tabBarInactiveTintColor: "#71717a", // Zinc-500
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Dashboard",
+          tabBarIcon: ({ color }) => <House size={28} color={color} />,
         }}
       />
+
       <Tabs.Screen
-        name="explore"
+        name="logout"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "Sair",
+          tabBarIcon: ({ color }) => <LogOut size={28} color={color} />,
         }}
+        listeners={() => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            signOut();
+          },
+        })}
       />
     </Tabs>
   );

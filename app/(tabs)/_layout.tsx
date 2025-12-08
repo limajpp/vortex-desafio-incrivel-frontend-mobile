@@ -1,4 +1,4 @@
-import { useAuth } from "@/contexts/authContext"; // Confirme se o caminho está correto (pode ser ../authContext ou @/authContext)
+import { useAuth } from "@/contexts/authContext";
 import { Tabs } from "expo-router";
 import { House, LogOut } from "lucide-react-native";
 import { Platform } from "react-native";
@@ -10,17 +10,16 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        // Unifiquei tudo aqui:
         tabBarStyle: {
           ...Platform.select({
             ios: { position: "absolute" },
             default: {},
           }),
-          backgroundColor: "#18181b", // Zinc-900
-          borderTopColor: "#27272a", // Zinc-800
+          backgroundColor: "#18181b",
+          borderTopColor: "#27272a",
         },
-        tabBarActiveTintColor: "#EAB308", // Amarelo Primary
-        tabBarInactiveTintColor: "#71717a", // Zinc-500
+        tabBarActiveTintColor: "#EAB308",
+        tabBarInactiveTintColor: "#71717a",
       }}
     >
       <Tabs.Screen

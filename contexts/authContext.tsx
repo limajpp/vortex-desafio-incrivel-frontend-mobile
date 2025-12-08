@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../services/api";
 
 type User = {
+  id: number;
   name: string;
   email: string;
 };
@@ -27,15 +28,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const segments = useSegments();
 
+  const fetchUserProfile = async () => {
+    try {
+      const response = await api.get("/auth/profile");
+      const data = response.data;
+
+      setUser({
+        id: data.sub,
+        name: data.name,
+        email: data.username,
+      });
+    } catch (error) {
+      console.log("Failed to load profile:", error);
+      await signOut();
+    }
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const token = await SecureStore.getItemAsync("access_token");
+
         if (token) {
-          setUser({ name: "Usuário", email: "user@example.com" });
+          api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+          await fetchUserProfile();
         }
       } catch (e) {
-        console.error(e);
+        console.error("Auth verification error:", e);
       } finally {
         setIsLoading(false);
       }
@@ -62,18 +82,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password: pass,
       });
+
       const { access_token } = response.data;
 
       await SecureStore.setItemAsync("access_token", access_token);
-      setUser({ email, name: "User" });
+
+      api.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
+
+      await fetchUserProfile();
     } catch (error: any) {
       console.error(error);
-      throw new Error(error.response?.data?.message || "Falha no login");
+      throw new Error(error.response?.data?.message || "Failed to login");
     }
   };
 
   const signOut = async () => {
     await SecureStore.deleteItemAsync("access_token");
+    delete api.defaults.headers.common["Authorization"];
     setUser(null);
   };
 

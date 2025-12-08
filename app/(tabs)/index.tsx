@@ -30,8 +30,14 @@ export default function DashboardScreen() {
     try {
       const response = await api.get("/expenses");
       setExpenses(response.data);
-    } catch (error) {
-      console.error("Error fetching expenses:", error);
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        console.log("Expired session. Logging out...");
+        signOut();
+        return;
+      }
+
+      console.log("Failed to fetch expenses:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);

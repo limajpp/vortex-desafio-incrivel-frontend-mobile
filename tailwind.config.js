@@ -11,19 +11,19 @@ module.exports = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#EAB308", 
+          DEFAULT: "#EAB308",
           foreground: "#000000",
         },
         secondary: {
-          DEFAULT: "#27272a", 
+          DEFAULT: "#27272a",
           foreground: "#ffffff",
         },
         destructive: {
-          DEFAULT: "#ef4444", 
+          DEFAULT: "#ef4444",
           foreground: "#ffffff",
         },
         muted: {
-          DEFAULT: "#71717a", 
+          DEFAULT: "#71717a",
           foreground: "#ffffff",
         },
         card: {

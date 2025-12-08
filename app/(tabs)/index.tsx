@@ -4,7 +4,8 @@ import { useAuth } from "@/contexts/authContext";
 import { api } from "@/services/api";
 import { useFocusEffect, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { AlertCircle, LogOut, Wallet } from "lucide-react-native";
+import { AlertCircle, LogOut, Moon, Sun, Wallet } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -19,6 +20,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function DashboardScreen() {
   const { signOut, user } = useAuth();
   const router = useRouter();
+  const { colorScheme, toggleColorScheme } = useColorScheme();
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,12 +56,11 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-zinc-50 dark:bg-zinc-950"
+      className="flex-1 bg-zinc-50 dark:bg-zinc-950 relative"
       edges={["top"]}
     >
       <StatusBar style="auto" />
 
-      {/* Header Fixo */}
       <View className="px-6 pt-2 pb-6 border-b border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-950 z-10">
         <View className="flex-row justify-between items-center mb-6">
           <View>
@@ -74,15 +75,27 @@ export default function DashboardScreen() {
             </Text>
           </View>
 
-          <TouchableOpacity
-            onPress={signOut}
-            className="h-10 w-10 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full items-center justify-center active:bg-zinc-200 dark:active:bg-zinc-800"
-          >
-            <LogOut size={18} color="#ef4444" />
-          </TouchableOpacity>
+          <View className="flex-row gap-2">
+            <TouchableOpacity
+              onPress={toggleColorScheme}
+              className="h-10 w-10 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full items-center justify-center active:bg-zinc-200 dark:active:bg-zinc-800"
+            >
+              {colorScheme === "dark" ? (
+                <Sun size={18} color="#EAB308" />
+              ) : (
+                <Moon size={18} color="#71717a" />
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={signOut}
+              className="h-10 w-10 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full items-center justify-center active:bg-zinc-200 dark:active:bg-zinc-800"
+            >
+              <LogOut size={18} color="#ef4444" />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Card de Resumo */}
         <View className="bg-zinc-900 p-6 rounded-3xl border border-zinc-800 shadow-sm">
           <View className="flex-row items-center mb-3">
             <View className="bg-yellow-500/10 p-2 rounded-full mr-3">
@@ -101,7 +114,6 @@ export default function DashboardScreen() {
         </View>
       </View>
 
-      {/* Lista de Gastos */}
       <View className="flex-1 px-6 bg-zinc-50 dark:bg-zinc-950">
         <View className="py-5">
           <Text className="text-zinc-900 dark:text-white font-bold text-lg">
@@ -139,8 +151,9 @@ export default function DashboardScreen() {
         )}
       </View>
 
-      {/* Botão Flutuante (FAB) -> Chama /modal */}
-      <FloatingButton onPress={() => router.push("/modal")} />
+      <View className="absolute bottom-12 right-6 z-50">
+        <FloatingButton onPress={() => router.push("/modal")} />
+      </View>
     </SafeAreaView>
   );
 }

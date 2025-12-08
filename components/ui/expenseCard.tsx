@@ -6,6 +6,7 @@ export interface Expense {
   description: string;
   amount: number;
   date: string;
+  userId: number;
 }
 
 interface ExpenseCardProps {
@@ -14,12 +15,17 @@ interface ExpenseCardProps {
 }
 
 export function ExpenseCard({ data, onPress }: ExpenseCardProps) {
+  const amountValue = Number(data.amount);
+
   const formattedAmount = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
-  }).format(data.amount);
+  }).format(amountValue);
 
-  const formattedDate = new Date(data.date).toLocaleDateString("pt-BR");
+  const dateObj = new Date(
+    data.date.includes("T") ? data.date : `${data.date}T12:00:00`
+  );
+  const formattedDate = dateObj.toLocaleDateString("pt-BR");
 
   return (
     <TouchableOpacity

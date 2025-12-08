@@ -3,7 +3,8 @@ import { FloatingButton } from "@/components/ui/floattingButton";
 import { useAuth } from "@/contexts/authContext";
 import { api } from "@/services/api";
 import { useFocusEffect, useRouter } from "expo-router";
-import { LogOut, Wallet } from "lucide-react-native";
+import { StatusBar } from "expo-status-bar";
+import { AlertCircle, LogOut, Wallet } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -35,6 +36,7 @@ export default function DashboardScreen() {
     }
   };
 
+  // Recarrega a lista sempre que a tela ganha foco
   useFocusEffect(
     useCallback(() => {
       fetchExpenses();
@@ -52,15 +54,16 @@ export default function DashboardScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-50 dark:bg-zinc-950">
-      <View className="px-6 pt-4 pb-6 border-b border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-950 z-10">
+    <SafeAreaView className="flex-1 bg-zinc-950" edges={["top"]}>
+      <StatusBar style="light" />
+
+      {/* Header Fixo */}
+      <View className="px-6 pt-2 pb-6 border-b border-zinc-900 bg-zinc-950 z-10">
         <View className="flex-row justify-between items-center mb-6">
           <View>
-            <Text className="text-zinc-500 dark:text-zinc-400 font-medium text-sm">
-              Welcome back,
-            </Text>
+            <Text className="text-zinc-400 font-medium text-sm">Welcome,</Text>
             <Text
-              className="text-2xl font-extrabold text-zinc-900 dark:text-white"
+              className="text-2xl font-extrabold text-white"
               numberOfLines={1}
             >
               {user?.name || "User"}
@@ -69,14 +72,15 @@ export default function DashboardScreen() {
 
           <TouchableOpacity
             onPress={signOut}
-            className="h-10 w-10 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full items-center justify-center"
+            className="h-10 w-10 bg-zinc-900 border border-zinc-800 rounded-full items-center justify-center active:bg-zinc-800"
           >
-            <LogOut size={20} color="#ef4444" />
+            <LogOut size={18} color="#ef4444" />
           </TouchableOpacity>
         </View>
 
-        <View className="bg-zinc-900 p-5 rounded-3xl border border-zinc-800 shadow-sm">
-          <View className="flex-row items-center mb-2">
+        {/* Card de Resumo */}
+        <View className="bg-zinc-900 p-6 rounded-3xl border border-zinc-800 shadow-sm">
+          <View className="flex-row items-center mb-3">
             <View className="bg-yellow-500/10 p-2 rounded-full mr-3">
               <Wallet size={20} color="#EAB308" />
             </View>
@@ -93,11 +97,10 @@ export default function DashboardScreen() {
         </View>
       </View>
 
-      <View className="flex-1 px-6">
-        <View className="py-4">
-          <Text className="text-zinc-900 dark:text-white font-bold text-lg">
-            Recent Transactions
-          </Text>
+      {/* Lista de Gastos */}
+      <View className="flex-1 px-6 bg-zinc-950">
+        <View className="py-5">
+          <Text className="text-white font-bold text-lg">History</Text>
         </View>
 
         {loading ? (
@@ -120,9 +123,9 @@ export default function DashboardScreen() {
             }
             ListEmptyComponent={
               <View className="items-center justify-center py-20 opacity-50">
-                <Wallet size={48} color="#71717a" />
-                <Text className="text-zinc-500 mt-4 font-medium">
-                  No expenses yet.
+                <AlertCircle size={48} color="#71717a" />
+                <Text className="text-zinc-500 mt-4 font-medium text-center">
+                  No expenses found.{"\n"}Tap + to add one.
                 </Text>
               </View>
             }
@@ -130,6 +133,7 @@ export default function DashboardScreen() {
         )}
       </View>
 
+      {/* Botão Flutuante (FAB) */}
       <FloatingButton onPress={() => router.push("/modal")} />
     </SafeAreaView>
   );

@@ -23,7 +23,11 @@ export default function RootLayout() {
 
           <Stack.Screen
             name="modal"
-            options={{ presentation: "modal", title: "Novo Gasto" }}
+            options={{
+              presentation: "modal",
+              title: "Novo Gasto",
+              headerShown: false,
+            }}
           />
         </Stack>
         <StatusBar style="auto" />

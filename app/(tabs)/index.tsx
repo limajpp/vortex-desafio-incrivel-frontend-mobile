@@ -1,32 +1,25 @@
-import { Expense, ExpenseCard } from "@/components/ui/expenseCard";
-import { FloatingButton } from "@/components/ui/floattingButton";
-import { useAuth } from "@/contexts/authContext";
-import { api } from "@/services/api";
-import { useFocusEffect, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { AlertCircle, LogOut, Wallet } from "lucide-react-native";
-import { useCallback, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Expense, ExpenseCard } from '@/components/ui/expenseCard';
+import { FloatingButton } from '@/components/ui/floatingButton';
+import { useAuth } from '@/contexts/authContext';
+import { api } from '@/services/api';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { AlertCircle, LogOut, Wallet } from 'lucide-react-native';
+import { useCallback, useState } from 'react';
+import { ActivityIndicator, FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DashboardScreen() {
   const { signOut, user } = useAuth();
   const router = useRouter();
-
+  
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchExpenses = async () => {
     try {
-      const response = await api.get("/expenses");
+      const response = await api.get('/expenses');
       setExpenses(response.data);
     } catch (error) {
       console.error("Error fetching expenses:", error);
@@ -36,7 +29,6 @@ export default function DashboardScreen() {
     }
   };
 
-  // Recarrega a lista sempre que a tela ganha foco
   useFocusEffect(
     useCallback(() => {
       fetchExpenses();
@@ -48,31 +40,25 @@ export default function DashboardScreen() {
     fetchExpenses();
   };
 
-  const totalAmount = expenses.reduce(
-    (acc, curr) => acc + Number(curr.amount),
-    0
-  );
+  const totalAmount = expenses.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950" edges={["top"]}>
-      <StatusBar style="light" />
-
+    <SafeAreaView className="flex-1 bg-zinc-50 dark:bg-zinc-950" edges={['top']}>
+      <StatusBar style="auto" />
+      
       {/* Header Fixo */}
-      <View className="px-6 pt-2 pb-6 border-b border-zinc-900 bg-zinc-950 z-10">
+      <View className="px-6 pt-2 pb-6 border-b border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-950 z-10">
         <View className="flex-row justify-between items-center mb-6">
           <View>
-            <Text className="text-zinc-400 font-medium text-sm">Welcome,</Text>
-            <Text
-              className="text-2xl font-extrabold text-white"
-              numberOfLines={1}
-            >
-              {user?.name || "User"}
+            <Text className="text-zinc-500 dark:text-zinc-400 font-medium text-sm">Welcome,</Text>
+            <Text className="text-2xl font-extrabold text-zinc-900 dark:text-white" numberOfLines={1}>
+              {user?.name || 'User'}
             </Text>
           </View>
-
-          <TouchableOpacity
+          
+          <TouchableOpacity 
             onPress={signOut}
-            className="h-10 w-10 bg-zinc-900 border border-zinc-800 rounded-full items-center justify-center active:bg-zinc-800"
+            className="h-10 w-10 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full items-center justify-center active:bg-zinc-200 dark:active:bg-zinc-800"
           >
             <LogOut size={18} color="#ef4444" />
           </TouchableOpacity>
@@ -89,18 +75,15 @@ export default function DashboardScreen() {
             </Text>
           </View>
           <Text className="text-4xl font-extrabold text-white">
-            {new Intl.NumberFormat("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            }).format(totalAmount)}
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalAmount)}
           </Text>
         </View>
       </View>
 
       {/* Lista de Gastos */}
-      <View className="flex-1 px-6 bg-zinc-950">
+      <View className="flex-1 px-6 bg-zinc-50 dark:bg-zinc-950">
         <View className="py-5">
-          <Text className="text-white font-bold text-lg">History</Text>
+          <Text className="text-zinc-900 dark:text-white font-bold text-lg">History</Text>
         </View>
 
         {loading ? (
@@ -115,17 +98,13 @@ export default function DashboardScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 100 }}
             refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                tintColor="#EAB308"
-              />
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#EAB308" />
             }
             ListEmptyComponent={
               <View className="items-center justify-center py-20 opacity-50">
                 <AlertCircle size={48} color="#71717a" />
                 <Text className="text-zinc-500 mt-4 font-medium text-center">
-                  No expenses found.{"\n"}Tap + to add one.
+                  No expenses found.{'\n'}Tap + to add one.
                 </Text>
               </View>
             }
@@ -133,8 +112,8 @@ export default function DashboardScreen() {
         )}
       </View>
 
-      {/* Botão Flutuante (FAB) */}
-      <FloatingButton onPress={() => router.push("/modal")} />
+      {/* Botão Flutuante (FAB) -> Chama /modal */}
+      <FloatingButton onPress={() => router.push('/modal')} />
     </SafeAreaView>
   );
 }

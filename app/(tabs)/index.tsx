@@ -72,13 +72,13 @@ export default function DashboardScreen() {
 
   const handleExpensePress = (expense: Expense) => {
     router.push({
-      pathname: '/modal',
-      params: { 
+      pathname: "/modal",
+      params: {
         id: expense.id,
         description: expense.description,
-        amount: expense.amount.toString(), 
-        date: expense.date 
-      }
+        amount: expense.amount.toString(),
+        date: expense.date,
+      },
     });
   };
 
@@ -162,7 +162,12 @@ export default function DashboardScreen() {
           <FlatList
             data={expenses}
             keyExtractor={(item) => String(item.id)}
-            renderItem={({ item }) => <ExpenseCard data={item} />}
+            renderItem={({ item }) => (
+              <ExpenseCard
+                data={item}
+                onPress={() => handleExpensePress(item)}
+              />
+            )}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 120 }}
             refreshControl={

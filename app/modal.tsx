@@ -30,7 +30,14 @@ export default function ModalScreen() {
   const [description, setDescription] = useState(
     (params.description as string) || ""
   );
-  const [amount, setAmount] = useState((params.amount as string) || "");
+
+  const [amount, setAmount] = useState(() => {
+    if (params.amount) {
+      return (params.amount as string).replace(".", ",");
+    }
+    return "";
+  });
+
   const [date, setDate] = useState(() => {
     if (params.date) {
       const paramDate = params.date as string;
@@ -43,6 +50,16 @@ export default function ModalScreen() {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const handleChangeAmount = (text: string) => {
+    let formattedText = text.replace(".", ",");
+
+    const regex = /^\d+(,\d{0,2})?$/;
+
+    if (formattedText === "" || regex.test(formattedText)) {
+      setAmount(formattedText);
+    }
+  };
 
   const handleSave = async () => {
     if (!description || !amount) {
@@ -65,15 +82,19 @@ export default function ModalScreen() {
       };
 
       if (isEditing) {
-        await api.put(`/expenses/${params.id}`, payload);
+        await api.patch(`/expenses/${params.id}`, payload);
       } else {
         await api.post("/expenses", payload);
       }
 
       router.back();
     } catch (error: any) {
-      const msg = error.response?.data?.message || "Failed to save.";
-      Alert.alert("Error", Array.isArray(msg) ? msg[0] : msg);
+      if (!isEditing) {
+        const msg = error.response?.data?.message || "Failed to save.";
+        Alert.alert("Error", Array.isArray(msg) ? msg[0] : msg);
+      } else {
+        console.log("Failed to update...", error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -155,11 +176,11 @@ export default function ModalScreen() {
                 </Text>
                 <TextInput
                   className={`flex-1 text-5xl font-extrabold h-20 ${textColor}`}
-                  placeholder="0.00"
+                  placeholder="0,00"
                   placeholderTextColor={placeholderColor}
-                  keyboardType="numeric"
+                  keyboardType="decimal-pad"
                   value={amount}
-                  onChangeText={setAmount}
+                  onChangeText={handleChangeAmount}
                   selectionColor="#EAB308"
                 />
               </View>

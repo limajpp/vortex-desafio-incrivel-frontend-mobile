@@ -12,6 +12,7 @@ type User = {
 type AuthContextType = {
   user: User | null;
   signIn: (email: string, pass: string) => Promise<void>;
+  register: (name: string, email: string, pass: string) => Promise<void>;
   signOut: () => void;
   isLoading: boolean;
 };
@@ -32,7 +33,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await api.get("/auth/profile");
       const data = response.data;
-
       setUser({
         id: data.sub,
         name: data.name,
@@ -48,14 +48,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const checkAuth = async () => {
       try {
         const token = await SecureStore.getItemAsync("access_token");
-
         if (token) {
           api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
           await fetchUserProfile();
         }
       } catch (e) {
-        console.error("Auth verification error:", e);
+        console.error("Auth validation error:", e);
       } finally {
         setIsLoading(false);
       }
@@ -65,13 +63,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isLoading) return;
-
     const currentSegment = segments[0] as string;
     const inAuthGroup = currentSegment === "(tabs)";
 
     if (!user && inAuthGroup) {
       router.replace("/login" as Href);
-    } else if (user && currentSegment === "login") {
+    } else if (
+      user &&
+      (currentSegment === "login" || currentSegment === "register")
+    ) {
       router.replace("/(tabs)" as Href);
     }
   }, [user, segments, isLoading]);
@@ -82,16 +82,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password: pass,
       });
-
       const { access_token } = response.data;
-
       await SecureStore.setItemAsync("access_token", access_token);
-
       api.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
-
       await fetchUserProfile();
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || "Failed to login");
+      throw new Error(error.response?.data?.message || "Login failed");
+    }
+  };
+
+  const register = async (name: string, email: string, pass: string) => {
+    try {
+      await api.post("/auth/register", { name, email, password: pass });
+
+      await signIn(email, pass);
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Registration failed");
     }
   };
 
@@ -102,7 +108,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, signIn, register, signOut, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

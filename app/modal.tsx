@@ -2,26 +2,28 @@ import { api } from "@/services/api";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AlignLeft, Calendar, Check, X } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  ActivityIndicator,
+  Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ModalScreen() {
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  // Data padrão: Hoje
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +32,6 @@ export default function ModalScreen() {
       return Alert.alert("Attention", "Please fill in description and amount.");
     }
 
-    // Tratamento para vírgula
     const numericAmount = parseFloat(amount.replace(",", "."));
 
     if (isNaN(numericAmount) || numericAmount <= 0) {
@@ -54,22 +55,32 @@ export default function ModalScreen() {
     }
   };
 
+  const iconColor = colorScheme === "dark" ? "#a1a1aa" : "#71717a";
+  const placeholderColor = colorScheme === "dark" ? "#52525b" : "#a1a1aa";
+  const inputBgColor = colorScheme === "dark" ? "bg-zinc-900" : "bg-zinc-100";
+  const borderColor =
+    colorScheme === "dark" ? "border-zinc-800" : "border-zinc-200";
+  const textColor = colorScheme === "dark" ? "text-white" : "text-zinc-900";
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 bg-zinc-950"
+      className="flex-1"
     >
-      <StatusBar style="light" />
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View className="flex-1">
-          {/* Header */}
-          <View className="flex-row justify-between items-center p-6 border-b border-zinc-900">
-            <Text className="text-xl font-bold text-white">New Expense</Text>
+        <SafeAreaView className="flex-1 bg-white dark:bg-zinc-950">
+          <View
+            className={`flex-row justify-between items-center px-6 py-4 border-b ${borderColor}`}
+          >
+            <Text className={`text-xl font-bold ${textColor}`}>
+              New Expense
+            </Text>
             <TouchableOpacity
               onPress={() => router.back()}
-              className="h-10 w-10 bg-zinc-900 rounded-full items-center justify-center border border-zinc-800 active:bg-zinc-800"
+              className={`h-10 w-10 rounded-full items-center justify-center border ${inputBgColor} ${borderColor}`}
             >
-              <X size={20} color="#a1a1aa" />
+              <X size={20} color={iconColor} />
             </TouchableOpacity>
           </View>
 
@@ -77,39 +88,36 @@ export default function ModalScreen() {
             className="flex-1 p-6"
             showsVerticalScrollIndicator={false}
           >
-            {/* Input Gigante de Valor */}
-            <View className="mb-8">
+            <View className={`mb-8 border-b ${borderColor} pb-2`}>
               <Text className="text-zinc-500 font-medium mb-2 uppercase text-xs tracking-widest">
                 Amount
               </Text>
-              <View className="flex-row items-center border-b border-zinc-800 pb-2">
+              <View className="flex-row items-center">
                 <Text className="text-4xl text-yellow-500 font-bold mr-2">
                   R$
                 </Text>
                 <TextInput
-                  className="flex-1 text-5xl text-white font-extrabold h-20"
+                  className={`flex-1 text-5xl font-extrabold h-20 ${textColor}`}
                   placeholder="0.00"
-                  placeholderTextColor="#27272a"
+                  placeholderTextColor={placeholderColor}
                   keyboardType="numeric"
                   value={amount}
                   onChangeText={setAmount}
-                  autoFocus={true}
                   selectionColor="#EAB308"
                 />
               </View>
             </View>
 
-            {/* Inputs Secundários */}
             <View className="gap-6">
               <View>
                 <View className="flex-row items-center mb-2 gap-2">
-                  <AlignLeft size={16} color="#71717a" />
-                  <Text className="text-zinc-400 font-medium">Description</Text>
+                  <AlignLeft size={16} color={iconColor} />
+                  <Text className="text-zinc-500 font-medium">Description</Text>
                 </View>
                 <TextInput
-                  className="w-full h-14 bg-zinc-900 border border-zinc-800 rounded-2xl px-4 text-white text-base focus:border-yellow-500 focus:bg-zinc-800/50"
+                  className={`w-full h-14 ${inputBgColor} border ${borderColor} rounded-2xl px-4 ${textColor} text-base focus:border-yellow-500`}
                   placeholder="Ex: Uber, Lunch..."
-                  placeholderTextColor="#52525b"
+                  placeholderTextColor={placeholderColor}
                   value={description}
                   onChangeText={setDescription}
                 />
@@ -117,15 +125,15 @@ export default function ModalScreen() {
 
               <View>
                 <View className="flex-row items-center mb-2 gap-2">
-                  <Calendar size={16} color="#71717a" />
-                  <Text className="text-zinc-400 font-medium">
+                  <Calendar size={16} color={iconColor} />
+                  <Text className="text-zinc-500 font-medium">
                     Date (YYYY-MM-DD)
                   </Text>
                 </View>
                 <TextInput
-                  className="w-full h-14 bg-zinc-900 border border-zinc-800 rounded-2xl px-4 text-white text-base focus:border-yellow-500 focus:bg-zinc-800/50"
+                  className={`w-full h-14 ${inputBgColor} border ${borderColor} rounded-2xl px-4 ${textColor} text-base focus:border-yellow-500`}
                   placeholder="2024-01-01"
-                  placeholderTextColor="#52525b"
+                  placeholderTextColor={placeholderColor}
                   value={date}
                   onChangeText={setDate}
                 />
@@ -133,8 +141,9 @@ export default function ModalScreen() {
             </View>
           </ScrollView>
 
-          {/* Botão de Salvar */}
-          <View className="p-6 border-t border-zinc-900 bg-zinc-950 pb-10">
+          <View
+            className={`p-6 border-t ${borderColor} bg-white dark:bg-zinc-950 pb-4`}
+          >
             <TouchableOpacity
               className={`w-full h-14 rounded-2xl flex-row items-center justify-center shadow-lg shadow-yellow-500/10 ${
                 loading ? "bg-yellow-600" : "bg-yellow-500 active:bg-yellow-400"
@@ -159,7 +168,7 @@ export default function ModalScreen() {
               )}
             </TouchableOpacity>
           </View>
-        </View>
+        </SafeAreaView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );

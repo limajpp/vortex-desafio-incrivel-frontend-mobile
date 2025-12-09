@@ -91,7 +91,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       await fetchUserProfile();
     } catch (error: any) {
-      console.error(error);
       throw new Error(error.response?.data?.message || "Failed to login");
     }
   };

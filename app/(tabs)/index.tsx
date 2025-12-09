@@ -9,6 +9,7 @@ import { useColorScheme } from "nativewind";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   RefreshControl,
   Text,
@@ -55,6 +56,20 @@ export default function DashboardScreen() {
     fetchExpenses();
   };
 
+  const handleSignOut = () => {
+    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Sign Out",
+        onPress: signOut,
+        style: "destructive",
+      },
+    ]);
+  };
+
   const totalAmount = expenses.reduce(
     (acc, curr) => acc + Number(curr.amount),
     0
@@ -94,7 +109,7 @@ export default function DashboardScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={signOut}
+              onPress={handleSignOut}
               className="h-10 w-10 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full items-center justify-center active:bg-zinc-200 dark:active:bg-zinc-800"
             >
               <LogOut size={18} color="#ef4444" />

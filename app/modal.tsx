@@ -1,4 +1,5 @@
 import { api } from "@/services/api";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AlignLeft, Calendar, Check, X } from "lucide-react-native";
@@ -22,9 +23,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ModalScreen() {
   const router = useRouter();
   const { colorScheme } = useColorScheme();
+
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleCreate = async () => {
@@ -40,10 +43,12 @@ export default function ModalScreen() {
 
     setLoading(true);
     try {
+      const formattedDate = date.toISOString().split("T")[0];
+
       await api.post("/expenses", {
         description,
         amount: numericAmount,
-        date: date,
+        date: formattedDate,
       });
 
       router.back();
@@ -52,6 +57,16 @@ export default function ModalScreen() {
       Alert.alert("Error", Array.isArray(msg) ? msg[0] : msg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onChangeDate = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === "android") {
+      setShowDatePicker(false);
+    }
+
+    if (selectedDate) {
+      setDate(selectedDate);
     }
   };
 
@@ -126,17 +141,48 @@ export default function ModalScreen() {
               <View>
                 <View className="flex-row items-center mb-2 gap-2">
                   <Calendar size={16} color={iconColor} />
-                  <Text className="text-zinc-500 font-medium">
-                    Date (YYYY-MM-DD)
-                  </Text>
+                  <Text className="text-zinc-500 font-medium">Date</Text>
                 </View>
-                <TextInput
-                  className={`w-full h-14 ${inputBgColor} border ${borderColor} rounded-2xl px-4 ${textColor} text-base focus:border-yellow-500`}
-                  placeholder="2024-01-01"
-                  placeholderTextColor={placeholderColor}
-                  value={date}
-                  onChangeText={setDate}
-                />
+
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(true)}
+                  className={`w-full h-14 ${inputBgColor} border ${borderColor} rounded-2xl px-4 justify-center`}
+                >
+                  <Text className={`${textColor} text-base`}>
+                    {date.toLocaleDateString("pt-BR")}
+                  </Text>
+                </TouchableOpacity>
+
+                {showDatePicker &&
+                  (Platform.OS === "ios" ? (
+                    <DateTimePicker
+                      value={date}
+                      mode="date"
+                      display="spinner"
+                      onChange={onChangeDate}
+                      textColor={colorScheme === "dark" ? "white" : "black"}
+                      themeVariant={colorScheme === "dark" ? "dark" : "light"}
+                      style={{ marginTop: 10 }}
+                    />
+                  ) : (
+                    <DateTimePicker
+                      value={date}
+                      mode="date"
+                      display="default"
+                      onChange={onChangeDate}
+                    />
+                  ))}
+
+                {showDatePicker && Platform.OS === "ios" && (
+                  <TouchableOpacity
+                    onPress={() => setShowDatePicker(false)}
+                    className="mt-2 bg-zinc-200 dark:bg-zinc-800 p-2 rounded-lg items-center"
+                  >
+                    <Text className="text-zinc-900 dark:text-white font-bold">
+                      Confirm Date
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </ScrollView>

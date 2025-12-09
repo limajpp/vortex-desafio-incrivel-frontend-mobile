@@ -249,7 +249,7 @@ export default function Register() {
                 <TouchableOpacity
                   className={`w-full h-14 rounded-xl items-center justify-center mt-6 shadow-lg shadow-yellow-500/20 ${
                     isFormValid && !loading
-                      ? "bg-yellow-500"
+                      ? "bg-yellow-600"
                       : "bg-zinc-300 dark:bg-zinc-800 opacity-80"
                   }`}
                   onPress={handleRegister}

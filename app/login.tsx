@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/authContext";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
   CircleDollarSign,
@@ -25,6 +26,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -168,6 +170,17 @@ export default function Login() {
                     Sign In
                   </Text>
                 )}
+              </TouchableOpacity>
+            </View>
+
+            <View className="mt-8 items-center border-t border-zinc-100 dark:border-zinc-800/50 pt-6">
+              <Text className="text-zinc-500 dark:text-zinc-400 text-sm mb-2">
+                Don't have an account?
+              </Text>
+              <TouchableOpacity onPress={() => router.push("/register")}>
+                <Text className="text-yellow-500 font-bold text-base">
+                  Sign Up for Free
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

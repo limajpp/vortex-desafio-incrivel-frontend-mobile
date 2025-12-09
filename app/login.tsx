@@ -1,5 +1,4 @@
 import { useAuth } from "@/contexts/authContext";
-import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
   CircleDollarSign,
@@ -26,7 +25,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Login() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -36,6 +34,21 @@ export default function Login() {
 
   const iconColor = "#EAB308";
   const placeholderColor = "#71717a";
+
+  const removeEmojis = (text: string) => {
+    return text.replace(
+      /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2B55}\u{2934}-\u{2935}\u{3297}\u{3299}\u{3030}\u{303D}\u{00A9}\u{00AE}\u{2122}\u{200D}]/gu,
+      ""
+    );
+  };
+
+  const handleEmailChange = (text: string) => {
+    setEmail(removeEmojis(text));
+  };
+
+  const handlePasswordChange = (text: string) => {
+    setPassword(removeEmojis(text));
+  };
 
   async function handleLogin() {
     if (!email || !password) {
@@ -109,7 +122,7 @@ export default function Login() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   value={email}
-                  onChangeText={setEmail}
+                  onChangeText={handleEmailChange}
                 />
               </View>
 
@@ -124,7 +137,7 @@ export default function Login() {
                     placeholderTextColor={placeholderColor}
                     secureTextEntry={!showPassword}
                     value={password}
-                    onChangeText={setPassword}
+                    onChangeText={handlePasswordChange}
                   />
                   <TouchableOpacity
                     onPress={() => setShowPassword(!showPassword)}
@@ -155,17 +168,6 @@ export default function Login() {
                     Sign In
                   </Text>
                 )}
-              </TouchableOpacity>
-            </View>
-
-            <View className="mt-8 items-center border-t border-zinc-100 dark:border-zinc-800/50 pt-6">
-              <Text className="text-zinc-500 dark:text-zinc-400 text-sm mb-2">
-                Don't have an account?
-              </Text>
-              <TouchableOpacity onPress={() => router.push("/register")}>
-                <Text className="text-yellow-500 font-bold text-base">
-                  Sign Up
-                </Text>
               </TouchableOpacity>
             </View>
           </View>

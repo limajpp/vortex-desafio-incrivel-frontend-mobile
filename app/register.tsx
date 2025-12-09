@@ -2,26 +2,26 @@ import { useAuth } from "@/contexts/authContext";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
-    Check,
-    ChevronLeft,
-    Eye,
-    EyeOff,
-    UserPlus,
-    X,
+  Check,
+  ChevronLeft,
+  Eye,
+  EyeOff,
+  UserPlus,
+  X,
 } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  ActivityIndicator,
+  Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -42,6 +42,13 @@ export default function Register() {
   const [hasNumber, setHasNumber] = useState(false);
   const [hasSymbol, setHasSymbol] = useState(false);
   const [passwordsMatch, setPasswordsMatch] = useState(false);
+
+  const removeEmojis = (text: string) => {
+    return text.replace(
+      /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2B55}\u{2934}-\u{2935}\u{3297}\u{3299}\u{3030}\u{303D}\u{00A9}\u{00AE}\u{2122}\u{200D}]/gu,
+      ""
+    );
+  };
 
   useEffect(() => {
     setHasMinLength(password.length >= 8);
@@ -114,7 +121,7 @@ export default function Register() {
 
       <TouchableOpacity
         onPress={() => router.back()}
-        className="absolute top-4 left-6 z-10 p-2 bg-white dark:bg-zinc-900 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm mt-10"
+        className="absolute top-4 left-6 z-10 p-2 bg-white dark:bg-zinc-900 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm"
       >
         <ChevronLeft size={24} color="#EAB308" />
       </TouchableOpacity>
@@ -152,7 +159,7 @@ export default function Register() {
                     placeholderTextColor="#71717a"
                     autoCapitalize="words"
                     value={name}
-                    onChangeText={setName}
+                    onChangeText={(t) => setName(removeEmojis(t))}
                   />
                 </View>
 
@@ -167,7 +174,7 @@ export default function Register() {
                     keyboardType="email-address"
                     autoCapitalize="none"
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={(t) => setEmail(removeEmojis(t))}
                   />
                 </View>
 
@@ -182,7 +189,7 @@ export default function Register() {
                       placeholderTextColor="#71717a"
                       secureTextEntry={!showPassword}
                       value={password}
-                      onChangeText={setPassword}
+                      onChangeText={(t) => setPassword(removeEmojis(t))}
                     />
                     <TouchableOpacity
                       onPress={() => setShowPassword(!showPassword)}
@@ -230,7 +237,7 @@ export default function Register() {
                     placeholderTextColor="#71717a"
                     secureTextEntry
                     value={confirmPassword}
-                    onChangeText={setConfirmPassword}
+                    onChangeText={(t) => setConfirmPassword(removeEmojis(t))}
                   />
                   {confirmPassword.length > 0 && !passwordsMatch && (
                     <Text className="text-red-500 text-xs mt-1 font-medium">

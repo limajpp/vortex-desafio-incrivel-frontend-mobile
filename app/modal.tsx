@@ -31,6 +31,13 @@ export default function ModalScreen() {
     (params.description as string) || ""
   );
 
+  const removeEmojis = (text: string) => {
+    return text.replace(
+      /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2B55}\u{2934}-\u{2935}\u{3297}\u{3299}\u{3030}\u{303D}\u{00A9}\u{00AE}\u{2122}\u{200D}]/gu,
+      ""
+    );
+  };
+
   const [amount, setAmount] = useState(() => {
     if (params.amount) {
       return (params.amount as string).replace(".", ",");
@@ -52,8 +59,9 @@ export default function ModalScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleChangeAmount = (text: string) => {
-    let formattedText = text.replace(".", ",");
+    const textWithoutEmojis = removeEmojis(text);
 
+    let formattedText = textWithoutEmojis.replace(".", ",");
     const regex = /^\d+(,\d{0,2})?$/;
 
     if (formattedText === "" || regex.test(formattedText)) {
@@ -197,7 +205,7 @@ export default function ModalScreen() {
                   placeholder="Ex: Uber, Lunch..."
                   placeholderTextColor={placeholderColor}
                   value={description}
-                  onChangeText={setDescription}
+                  onChangeText={(t) => setDescription(removeEmojis(t))}
                 />
               </View>
 

@@ -1,8 +1,8 @@
 import { api } from "@/services/api";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { AlignLeft, Calendar, Check, X } from "lucide-react-native";
+import { AlignLeft, Calendar, Check, Trash2, X } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { useState } from "react";
 import {
@@ -22,15 +22,29 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ModalScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const { colorScheme } = useColorScheme();
 
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(new Date());
+  const isEditing = !!params.id;
+
+  const [description, setDescription] = useState(
+    (params.description as string) || ""
+  );
+  const [amount, setAmount] = useState((params.amount as string) || "");
+  const [date, setDate] = useState(() => {
+    if (params.date) {
+      const paramDate = params.date as string;
+      return new Date(
+        paramDate.includes("T") ? paramDate : `${paramDate}T12:00:00`
+      );
+    }
+    return new Date();
+  });
+
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleCreate = async () => {
+  const handleSave = async () => {
     if (!description || !amount) {
       return Alert.alert("Attention", "Please fill in description and amount.");
     }
@@ -44,12 +58,17 @@ export default function ModalScreen() {
     setLoading(true);
     try {
       const formattedDate = date.toISOString().split("T")[0];
-
-      await api.post("/expenses", {
+      const payload = {
         description,
         amount: numericAmount,
         date: formattedDate,
-      });
+      };
+
+      if (isEditing) {
+        await api.put(`/expenses/${params.id}`, payload);
+      } else {
+        await api.post("/expenses", payload);
+      }
 
       router.back();
     } catch (error: any) {
@@ -60,11 +79,34 @@ export default function ModalScreen() {
     }
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      "Delete Expense",
+      "Are you sure you want to delete this expense?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            setLoading(true);
+            try {
+              await api.delete(`/expenses/${params.id}`);
+              router.back();
+            } catch (error: any) {
+              Alert.alert("Error", "Failed to delete expense.");
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const onChangeDate = (event: any, selectedDate?: Date) => {
     if (Platform.OS === "android") {
       setShowDatePicker(false);
     }
-
     if (selectedDate) {
       setDate(selectedDate);
     }
@@ -89,7 +131,7 @@ export default function ModalScreen() {
             className={`flex-row justify-between items-center px-6 py-4 border-b ${borderColor}`}
           >
             <Text className={`text-xl font-bold ${textColor}`}>
-              New Expense
+              {isEditing ? "Edit Expense" : "New Expense"}
             </Text>
             <TouchableOpacity
               onPress={() => router.back()}
@@ -188,13 +230,23 @@ export default function ModalScreen() {
           </ScrollView>
 
           <View
-            className={`p-6 border-t ${borderColor} bg-white dark:bg-zinc-950 pb-4`}
+            className={`p-6 border-t ${borderColor} bg-white dark:bg-zinc-950 pb-4 flex-row gap-3`}
           >
+            {isEditing && (
+              <TouchableOpacity
+                className={`h-14 w-14 rounded-2xl flex-row items-center justify-center bg-red-500/10 border border-red-500/20`}
+                onPress={handleDelete}
+                disabled={loading}
+              >
+                <Trash2 size={24} color="#ef4444" />
+              </TouchableOpacity>
+            )}
+
             <TouchableOpacity
-              className={`w-full h-14 rounded-2xl flex-row items-center justify-center shadow-lg shadow-yellow-500/10 ${
+              className={`flex-1 h-14 rounded-2xl flex-row items-center justify-center shadow-lg shadow-yellow-500/10 ${
                 loading ? "bg-yellow-600" : "bg-yellow-500 active:bg-yellow-400"
               }`}
-              onPress={handleCreate}
+              onPress={handleSave}
               disabled={loading}
             >
               {loading ? (
@@ -208,7 +260,7 @@ export default function ModalScreen() {
                     className="mr-2"
                   />
                   <Text className="text-zinc-950 font-extrabold text-lg uppercase tracking-wide">
-                    Save Expense
+                    {isEditing ? "Update" : "Save"}
                   </Text>
                 </>
               )}

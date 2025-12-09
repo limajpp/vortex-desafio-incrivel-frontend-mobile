@@ -70,6 +70,18 @@ export default function DashboardScreen() {
     ]);
   };
 
+  const handleExpensePress = (expense: Expense) => {
+    router.push({
+      pathname: '/modal',
+      params: { 
+        id: expense.id,
+        description: expense.description,
+        amount: expense.amount.toString(), 
+        date: expense.date 
+      }
+    });
+  };
+
   const totalAmount = expenses.reduce(
     (acc, curr) => acc + Number(curr.amount),
     0

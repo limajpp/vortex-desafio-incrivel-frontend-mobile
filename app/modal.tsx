@@ -101,6 +101,7 @@ export default function ModalScreen() {
         const msg = error.response?.data?.message || "Failed to save.";
         Alert.alert("Error", Array.isArray(msg) ? msg[0] : msg);
       } else {
+        Alert.alert("Error", "The maximum expense value stands for (99,999,999.99)");
         console.log("Failed to update...", error.message);
       }
     } finally {

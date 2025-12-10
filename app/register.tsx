@@ -121,7 +121,7 @@ export default function Register() {
 
       <TouchableOpacity
         onPress={() => router.back()}
-        className="absolute top-4 left-6 z-10 p-2 bg-white dark:bg-zinc-900 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm"
+        className="absolute top-4 left-6 z-10 p-2 bg-white dark:bg-zinc-900 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm mt-14"
       >
         <ChevronLeft size={24} color="#EAB308" />
       </TouchableOpacity>

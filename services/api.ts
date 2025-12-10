@@ -2,6 +2,7 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
 // const LOCAL_HOME_IP = "192.168.15.8";
+// const LOCAL_UNIFOR_INSTITUCIONAL_IP = "10.81.16.233";
 const LOCAL_PHONE_IP = "172.20.10.4";
 
 const getBaseUrl = () => {

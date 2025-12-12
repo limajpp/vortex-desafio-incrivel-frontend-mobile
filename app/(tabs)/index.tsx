@@ -129,16 +129,16 @@ export default function DashboardScreen() {
           </View>
         </View>
 
-        <View className="bg-zinc-900 p-6 rounded-3xl border border-zinc-800 shadow-sm">
+        <View className="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
           <View className="flex-row items-center mb-3">
             <View className="bg-yellow-500/10 p-2 rounded-full mr-3">
               <Wallet size={20} color="#EAB308" />
             </View>
-            <Text className="text-zinc-400 font-bold uppercase text-xs tracking-wider">
+            <Text className="text-zinc-500 dark:text-zinc-400 font-bold uppercase text-xs tracking-wider">
               Total Expenses
             </Text>
           </View>
-          <Text className="text-4xl font-extrabold text-white">
+          <Text className="text-4xl font-extrabold text-zinc-900 dark:text-white">
             {new Intl.NumberFormat("pt-BR", {
               style: "currency",
               currency: "BRL",
